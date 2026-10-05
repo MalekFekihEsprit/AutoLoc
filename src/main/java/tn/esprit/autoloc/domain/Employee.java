@@ -6,19 +6,22 @@ import lombok.*;
 @Entity
 @Table(name = "employee")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@ToString(exclude = "idEmployee")
+@EqualsAndHashCode(exclude = "idEmployee")
 public class Employee {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idEmployee;
+    @Setter(AccessLevel.NONE)
+    Long idEmployee;
 
     @Column(nullable = false, length = 50)
-    private String nom;
+    String nom;
 
     @Column(nullable = false, length = 50)
-    private String prenom;
+    String prenom;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private RoleEmployee role;
+    RoleEmployee role;
 }

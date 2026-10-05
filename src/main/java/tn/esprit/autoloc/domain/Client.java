@@ -7,27 +7,30 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "client")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@ToString(exclude = "idClient")
+@EqualsAndHashCode(exclude = "idClient")
 public class Client {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idClient;
+    @Setter(AccessLevel.NONE)
+    Long idClient;
 
     @Column(nullable = false, length = 50)
-    private String nom;
+    String nom;
 
     @Column(nullable = false, length = 50)
-    private String prenom;
+    String prenom;
 
     @Column(nullable = false, unique = true, length = 100)
-    private String email;
+    String email;
 
     @Column(length = 20)
-    private String telephone;
+    String telephone;
 
     @Column(nullable = false, unique = true, length = 30)
-    private String numPermis;
+    String numPermis;
 
     @Column(nullable = false)
-    private LocalDate dateInscription;
+    LocalDate dateInscription;
 }

@@ -7,19 +7,22 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "reservation")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@ToString(exclude = "idReservation")
+@EqualsAndHashCode(exclude = "idReservation")
 public class Reservation {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idReservation;
+    @Setter(AccessLevel.NONE)
+    Long idReservation;
 
     @Column(nullable = false)
-    private LocalDate dateDebut;
+    LocalDate dateDebut;
 
     @Column(nullable = false)
-    private LocalDate dateFin;
+    LocalDate dateFin;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private StatutReservation statut;
+    StatutReservation statut;
 }

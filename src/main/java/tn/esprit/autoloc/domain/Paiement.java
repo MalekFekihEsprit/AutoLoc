@@ -8,19 +8,22 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "paiement")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@ToString(exclude = "idPaiement")
+@EqualsAndHashCode(exclude = "idPaiement")
 public class Paiement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idPaiement;
+    @Setter(AccessLevel.NONE)
+    Long idPaiement;
 
     @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal montant;
+    BigDecimal montant;
 
     @Column(nullable = false)
-    private LocalDate datePaiement;
+    LocalDate datePaiement;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false, length = 20)
-    private ModePaiement modePaiement;
+    ModePaiement modePaiement;
 }

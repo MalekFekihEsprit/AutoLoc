@@ -7,17 +7,20 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "maintenance")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@ToString(exclude = "idMaintenance")
+@EqualsAndHashCode(exclude = "idMaintenance")
 public class Maintenance {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idMaintenance;
+    @Setter(AccessLevel.NONE)
+    Long idMaintenance;
 
     @Column(nullable = false)
-    private LocalDate dateDebut;
+    LocalDate dateDebut;
 
-    private LocalDate dateFin;
+    LocalDate dateFin;
 
     @Column(length = 255)
-    private String description;
+    String description;
 }

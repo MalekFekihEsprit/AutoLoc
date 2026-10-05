@@ -6,12 +6,15 @@ import lombok.*;
 @Entity
 @Table(name = "equipement")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@ToString(exclude = "idEquipement")
+@EqualsAndHashCode(exclude = "idEquipement")
 public class Equipement {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idEquipement;
+    @Setter(AccessLevel.NONE)
+    Long idEquipement;
 
     @Column(nullable = false, length = 100)
-    private String libelle;
+    String libelle;
 }

@@ -8,18 +8,21 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "contrat")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@ToString(exclude = "idContrat")
+@EqualsAndHashCode(exclude = "idContrat")
 public class Contrat {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long idContrat;
+    @Setter(AccessLevel.NONE)
+    Long idContrat;
 
     @Column(nullable = false)
-    private LocalDate dateSignature;
+    LocalDate dateSignature;
 
     @Column(nullable = false, precision = 10, scale = 2)
-    private BigDecimal montantTotal;
+    BigDecimal montantTotal;
 
     @Column(nullable = false)
-    private Boolean valide;
+    Boolean valide;
 }
