@@ -3,13 +3,17 @@ package tn.esprit.autoloc.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "client")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-@ToString(exclude = "idClient")
-@EqualsAndHashCode(exclude = "idClient")
+@ToString(exclude = {"idClient", "reservations"})
+@EqualsAndHashCode(exclude = {"idClient", "reservations"})
 public class Client {
+    @OneToMany(mappedBy = "client", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    List<Reservation> reservations = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

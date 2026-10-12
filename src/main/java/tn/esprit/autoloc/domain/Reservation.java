@@ -7,9 +7,17 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "reservation")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-@ToString(exclude = "idReservation")
-@EqualsAndHashCode(exclude = "idReservation")
+@ToString(exclude = {"idReservation", "client", "vehicule", "contrat"})
+@EqualsAndHashCode(exclude = {"idReservation", "client", "vehicule", "contrat"})
 public class Reservation {
+    @ManyToOne(fetch = FetchType.LAZY)
+    Client client;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    Vehicule vehicule;
+
+    @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    Contrat contrat;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

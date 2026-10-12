@@ -7,10 +7,12 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "maintenance")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-@ToString(exclude = "idMaintenance")
-@EqualsAndHashCode(exclude = "idMaintenance")
+@ToString(exclude = {"idMaintenance", "vehicule"})
+@EqualsAndHashCode(exclude = {"idMaintenance", "vehicule"})
 public class Maintenance {
-
+    @ManyToOne(fetch = FetchType.LAZY)
+    Vehicule vehicule;
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Setter(AccessLevel.NONE)

@@ -3,6 +3,10 @@ package tn.esprit.autoloc.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 @Entity
 @Table(name = "vehicule")
@@ -10,9 +14,22 @@ import java.math.BigDecimal;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-@ToString(exclude = "idVehicule")
-@EqualsAndHashCode(exclude = "idVehicule")
+@ToString(exclude = {"idVehicule", "agence", "equipements", "maintenances"})
+@EqualsAndHashCode(exclude = {"idVehicule", "agence", "equipements", "maintenances"})
 public class Vehicule {
+    @ManyToOne(fetch = FetchType.LAZY)
+    Agence agence;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "vehicule_equipement",
+            joinColumns = @JoinColumn(name = "vehicule_id_vehicule"),
+            inverseJoinColumns = @JoinColumn(name = "equipement_id_equipement")
+    )
+    Set<Equipement> equipements = new HashSet<>();
+
+    @OneToMany(mappedBy = "vehicule", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    List<Maintenance> maintenances = new ArrayList<>();
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

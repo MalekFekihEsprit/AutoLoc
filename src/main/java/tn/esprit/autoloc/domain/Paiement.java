@@ -8,9 +8,11 @@ import java.time.LocalDate;
 @Entity
 @Table(name = "paiement")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-@ToString(exclude = "idPaiement")
-@EqualsAndHashCode(exclude = "idPaiement")
+@ToString(exclude = {"idPaiement", "contrat"})
+@EqualsAndHashCode(exclude = {"idPaiement", "contrat"})
 public class Paiement {
+    @ManyToOne(fetch = FetchType.LAZY)
+    Contrat contrat;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -6,9 +6,11 @@ import lombok.*;
 @Entity
 @Table(name = "employee")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
-@ToString(exclude = "idEmployee")
-@EqualsAndHashCode(exclude = "idEmployee")
+@ToString(exclude = {"idEmployee", "agence"})
+@EqualsAndHashCode(exclude = {"idEmployee", "agence"})
 public class Employee {
+    @ManyToOne(fetch = FetchType.LAZY)
+    Agence agence;
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
