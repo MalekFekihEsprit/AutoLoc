@@ -36,7 +36,8 @@ class RepositoryTests {
 
         // save()
         Agence saved = agenceRepository.save(agence);
-        System.out.println(">>> SAVE agence -> id=" + saved.getIdAgence());
+        System.out.println(">>> SAVE agence -> " + saved + " (id=" + saved.getIdAgence() + ")");
+        assertNotNull(saved.getIdAgence());
 
         // findAll()
         List<Agence> all = agenceRepository.findAll();
@@ -60,11 +61,10 @@ class RepositoryTests {
 
         // deleteById() + verify
         agenceRepository.deleteById(saved.getIdAgence());
-        boolean stillThere = agenceRepository.existsById(saved.getIdAgence());
-        System.out.println(">>> AFTER DELETE, exists = " + stillThere);
-        assertFalse(stillThere);
+        System.out.println(">>> AFTER DELETE, findById = " +
+                agenceRepository.findById(saved.getIdAgence()).orElse(null));
+        assertNull(agenceRepository.findById(saved.getIdAgence()).orElse(null));
     }
-
     // ============================================================
     // PARTIE 3 — Client
     // ============================================================
@@ -109,7 +109,7 @@ class RepositoryTests {
         assertTrue(exists);
 
         // existsById() non-existing
-        boolean notExists = clientRepository.existsById(999999L);
+        boolean notExists = clientRepository.existsById(Long.MAX_VALUE);
         System.out.println(">>> EXISTS (unknown id) -> " + notExists);
         assertFalse(notExists);
 
@@ -139,7 +139,7 @@ class RepositoryTests {
         v.setStatut(StatutVehicule.DISPONIBLE);
 
         Vehicule saved = vehiculeRepository.save(v);
-        System.out.println(">>> SAVE vehicule -> id=" + saved.getIdVehicule());
+        System.out.println(">>> SAVE vehicule -> " + saved + " (id=" + saved.getIdVehicule() + ")");
 
         List<Vehicule> all = vehiculeRepository.findAll();
         System.out.println(">>> FIND ALL -> " + all);
@@ -149,13 +149,17 @@ class RepositoryTests {
         assertTrue(count > 0);
 
         // modification via save()
+        BigDecimal oldTarif = saved.getTarifJournalier();
         saved.setTarifJournalier(new BigDecimal("99.00"));
         saved.setStatut(StatutVehicule.LOUE);
         vehiculeRepository.save(saved);
+
         Vehicule updated = vehiculeRepository.findById(saved.getIdVehicule()).orElseThrow();
-        System.out.println(">>> UPDATED -> tarif=" + updated.getTarifJournalier()
-                + " statut=" + updated.getStatut());
+        System.out.println(">>> UPDATED -> " + updated
+                + " (tarif=" + updated.getTarifJournalier() + ", statut=" + updated.getStatut() + ")");
+
         assertEquals(new BigDecimal("99.00"), updated.getTarifJournalier());
+        assertNotEquals(oldTarif, updated.getTarifJournalier());
 
         // delete
         vehiculeRepository.deleteById(saved.getIdVehicule());
@@ -176,7 +180,7 @@ class RepositoryTests {
         e.setRole(RoleEmployee.AGENT);
 
         Employee saved = employeeRepository.save(e);
-        System.out.println(">>> SAVE employee -> id=" + saved.getIdEmployee());
+        System.out.println(">>> SAVE employee -> " + saved + " (id=" + saved.getIdEmployee() + ")");
         assertNotNull(saved.getIdEmployee());
 
         System.out.println(">>> FIND ALL -> " + employeeRepository.findAll());
@@ -186,15 +190,13 @@ class RepositoryTests {
         assertFalse(employeeRepository.existsById(saved.getIdEmployee()));
         System.out.println(">>> EMPLOYEE TEST OK");
     }
-
-    // --- Equipement ---
     @Test
     void testEquipementRepository() {
         Equipement eq = new Equipement();
         eq.setLibelle("GPS");
 
         Equipement saved = equipementRepository.save(eq);
-        System.out.println(">>> SAVE equipement -> id=" + saved.getIdEquipement());
+        System.out.println(">>> SAVE equipement -> " + saved + " (id=" + saved.getIdEquipement() + ")");
         assertNotNull(saved.getIdEquipement());
 
         Optional<Equipement> found = equipementRepository.findById(saved.getIdEquipement());
@@ -205,8 +207,6 @@ class RepositoryTests {
         assertFalse(equipementRepository.existsById(saved.getIdEquipement()));
         System.out.println(">>> EQUIPEMENT TEST OK");
     }
-
-    // --- Maintenance (needs a Vehicule first) ---
     @Test
     void testMaintenanceRepository() {
         long stamp = System.currentTimeMillis();
@@ -226,7 +226,7 @@ class RepositoryTests {
         m.setVehicule(savedVehicule);
 
         Maintenance saved = maintenanceRepository.save(m);
-        System.out.println(">>> SAVE maintenance -> id=" + saved.getIdMaintenance());
+        System.out.println(">>> SAVE maintenance -> " + saved + " (id=" + saved.getIdMaintenance() + ")");
         assertNotNull(saved.getIdMaintenance());
 
         System.out.println(">>> FIND ALL -> " + maintenanceRepository.findAll());

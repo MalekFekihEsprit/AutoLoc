@@ -1,0 +1,943 @@
+﻿===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\AutolocApiApplication.java =====
+package tn.esprit.autoloc;
+
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
+
+@SpringBootApplication
+public class AutolocApiApplication {
+
+    public static void main(String[] args) {
+        SpringApplication.run(AutolocApiApplication.class, args);
+    }
+// constructeur param, no param, getter all, setters all - id, to string -id -attributs names, equals -id , hashcode -id, all attributs are private but lombok does that
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\domain\Agence.java =====
+package tn.esprit.autoloc.domain;
+
+import jakarta.persistence.*;
+import lombok.*;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "agence")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(exclude = {"idAgence", "vehicules", "employees"})
+@EqualsAndHashCode(exclude = {"idAgence", "vehicules", "employees"})
+public class Agence {
+    @OneToMany(mappedBy = "agence", fetch = FetchType.LAZY)
+    List<Vehicule> vehicules = new ArrayList<>();
+
+    @OneToMany(mappedBy = "agence", fetch = FetchType.LAZY)
+    List<Employee> employees = new ArrayList<>();
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
+    Long idAgence;
+
+    @Column(nullable = false, length = 50)
+    String nom;
+
+    @Column(nullable = false, length = 50)
+    String ville;
+
+    @Column(nullable = false, length = 150)
+    String adresse;
+
+    @Column(nullable = false, length = 20)
+    String telephone;
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\domain\CategorieVehicule.java =====
+package tn.esprit.autoloc.domain;
+
+public enum CategorieVehicule {
+    CITADINE, BERLINE, SUV, UTILITAIRE
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\domain\Client.java =====
+package tn.esprit.autoloc.domain;
+
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "client")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@ToString(exclude = {"idClient", "reservations"})
+@EqualsAndHashCode(exclude = {"idClient", "reservations"})
+public class Client {
+    @OneToMany(mappedBy = "client", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    List<Reservation> reservations = new ArrayList<>();
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
+    Long idClient;
+
+    @Column(nullable = false, length = 50)
+    String nom;
+
+    @Column(nullable = false, length = 50)
+    String prenom;
+
+    @Column(nullable = false, unique = true, length = 100)
+    String email;
+
+    @Column(length = 20)
+    String telephone;
+
+    @Column(nullable = false, unique = true, length = 30)
+    String numPermis;
+
+    @Column(nullable = false)
+    LocalDate dateInscription;
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\domain\Contrat.java =====
+package tn.esprit.autoloc.domain;
+
+import jakarta.persistence.*;
+import lombok.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.List;
+
+@Entity
+@Table(name = "contrat")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@ToString(exclude = {"idContrat", "reservation", "paiements"})
+@EqualsAndHashCode(exclude = {"idContrat", "reservation", "paiements"})
+public class Contrat {
+    @OneToMany(
+            mappedBy = "contrat",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true,
+            fetch = FetchType.LAZY
+    )
+    List<Paiement> paiements = new ArrayList<>();
+
+    @OneToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "id_reservation")
+    Reservation reservation;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
+    Long idContrat;
+
+    @Column(nullable = false)
+    LocalDate dateSignature;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    BigDecimal montantTotal;
+
+    @Column(nullable = false)
+    Boolean valide;
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\domain\Employee.java =====
+package tn.esprit.autoloc.domain;
+
+import jakarta.persistence.*;
+import lombok.*;
+
+@Entity
+@Table(name = "employee")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@ToString(exclude = {"idEmployee", "agence"})
+@EqualsAndHashCode(exclude = {"idEmployee", "agence"})
+public class Employee {
+    @ManyToOne(fetch = FetchType.LAZY)
+    Agence agence;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
+    Long idEmployee;
+
+    @Column(nullable = false, length = 50)
+    String nom;
+
+    @Column(nullable = false, length = 50)
+    String prenom;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    RoleEmployee role;
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\domain\Equipement.java =====
+package tn.esprit.autoloc.domain;
+
+import jakarta.persistence.*;
+import lombok.*;
+import java.util.HashSet;
+import java.util.Set;
+
+@Entity
+@Table(name = "equipement")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@ToString(exclude = {"idEquipement", "vehicules"})
+@EqualsAndHashCode(exclude = {"idEquipement", "vehicules"})
+public class Equipement {
+    @ManyToMany(mappedBy = "equipements", fetch = FetchType.LAZY)
+    Set<Vehicule> vehicules = new HashSet<>();
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
+    Long idEquipement;
+
+    @Column(nullable = false, length = 100)
+    String libelle;
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\domain\Maintenance.java =====
+package tn.esprit.autoloc.domain;
+
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "maintenance")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@ToString(exclude = {"idMaintenance", "vehicule"})
+@EqualsAndHashCode(exclude = {"idMaintenance", "vehicule"})
+public class Maintenance {
+    @ManyToOne(fetch = FetchType.LAZY)
+    Vehicule vehicule;
+    
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
+    Long idMaintenance;
+
+    @Column(nullable = false)
+    LocalDate dateDebut;
+
+    LocalDate dateFin;
+
+    @Column(length = 255)
+    String description;
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\domain\ModePaiement.java =====
+package tn.esprit.autoloc.domain;
+
+public enum ModePaiement {
+    CARTE, ESPECES, VIREMENT
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\domain\Paiement.java =====
+package tn.esprit.autoloc.domain;
+
+import jakarta.persistence.*;
+import lombok.*;
+import java.math.BigDecimal;
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "paiement")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@ToString(exclude = {"idPaiement", "contrat"})
+@EqualsAndHashCode(exclude = {"idPaiement", "contrat"})
+public class Paiement {
+    @ManyToOne(fetch = FetchType.LAZY)
+    Contrat contrat;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
+    Long idPaiement;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    BigDecimal montant;
+
+    @Column(nullable = false)
+    LocalDate datePaiement;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    ModePaiement modePaiement;
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\domain\Reservation.java =====
+package tn.esprit.autoloc.domain;
+
+import jakarta.persistence.*;
+import lombok.*;
+import java.time.LocalDate;
+
+@Entity
+@Table(name = "reservation")
+@Getter @Setter @NoArgsConstructor @AllArgsConstructor
+@ToString(exclude = {"idReservation", "client", "vehicule", "contrat"})
+@EqualsAndHashCode(exclude = {"idReservation", "client", "vehicule", "contrat"})
+public class Reservation {
+    @ManyToOne(fetch = FetchType.LAZY)
+    Client client;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    Vehicule vehicule;
+
+    @OneToOne(mappedBy = "reservation", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    Contrat contrat;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
+    Long idReservation;
+
+    @Column(nullable = false)
+    LocalDate dateDebut;
+
+    @Column(nullable = false)
+    LocalDate dateFin;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    StatutReservation statut;
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\domain\RoleEmployee.java =====
+package tn.esprit.autoloc.domain;
+
+public enum RoleEmployee {
+    AGENT, MANAGER
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\domain\StatutReservation.java =====
+package tn.esprit.autoloc.domain;
+
+public enum StatutReservation {
+    EN_ATTENTE, CONFIRMEE, ANNULEE, TERMINEE
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\domain\StatutVehicule.java =====
+package tn.esprit.autoloc.domain;
+
+public enum StatutVehicule {
+    DISPONIBLE, LOUE, MAINTENANCE
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\domain\Vehicule.java =====
+package tn.esprit.autoloc.domain;
+
+import jakarta.persistence.*;
+import lombok.*;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+
+@Entity
+@Table(name = "vehicule")
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@ToString(exclude = {"idVehicule", "agence", "equipements", "maintenances"})
+@EqualsAndHashCode(exclude = {"idVehicule", "agence", "equipements", "maintenances"})
+public class Vehicule {
+    @ManyToOne(fetch = FetchType.LAZY)
+    Agence agence;
+
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(
+            name = "vehicule_equipement",
+            joinColumns = @JoinColumn(name = "vehicule_id_vehicule"),
+            inverseJoinColumns = @JoinColumn(name = "equipement_id_equipement")
+    )
+    Set<Equipement> equipements = new HashSet<>();
+
+    @OneToMany(mappedBy = "vehicule", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    List<Maintenance> maintenances = new ArrayList<>();
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Setter(AccessLevel.NONE)
+    Long idVehicule;
+
+    @Column(nullable = false, unique = true, length = 20)
+    String immatriculation;
+
+    @Column(nullable = false, length = 50)
+    String marque;
+
+    @Column(nullable = false, length = 50)
+    String modele;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    CategorieVehicule categorie;
+
+    @Column(nullable = false, precision = 10, scale = 2)
+    BigDecimal tarifJournalier;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    StatutVehicule statut;
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\repository\IAgenceRepository.java =====
+package tn.esprit.autoloc.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import tn.esprit.autoloc.domain.*;
+import java.util.List;
+
+public interface IAgenceRepository extends JpaRepository<Agence, Long> {
+    List<Agence> findByVille(String ville);
+    List<Agence> findByNomContainingIgnoreCase(String nom);
+    boolean existsByNom(String nom);
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\repository\IClientRepository.java =====
+package tn.esprit.autoloc.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import tn.esprit.autoloc.domain.*;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+public interface IClientRepository extends JpaRepository<Client, Long> {
+    Optional<Client> findByEmail(String email);
+    List<Client> findByNomAndPrenom(String nom, String prenom);
+    List<Client> findByNomContainingIgnoreCase(String fragment);
+    boolean existsByNumPermis(String numPermis);
+    long countByDateInscriptionAfter(LocalDate date);
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\repository\IContratRepository.java =====
+package tn.esprit.autoloc.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import tn.esprit.autoloc.domain.*;
+import java.util.List;
+import java.util.Optional;
+
+public interface IContratRepository extends JpaRepository<Contrat, Long> {
+    List<Contrat> findByValideTrue();
+    List<Contrat> findByValideFalse();
+    Optional<Contrat> findByReservationIdReservation(Long idReservation);
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\repository\IEmployeeRepository.java =====
+package tn.esprit.autoloc.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import tn.esprit.autoloc.domain.*;
+import java.util.List;
+
+public interface IEmployeeRepository extends JpaRepository<Employee, Long> {
+    List<Employee> findByRole(RoleEmployee role);
+    List<Employee> findByAgenceIdAgence(Long idAgence);
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\repository\IEquipementRepository.java =====
+package tn.esprit.autoloc.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import tn.esprit.autoloc.domain.*;
+import java.util.List;
+
+public interface IEquipementRepository extends JpaRepository<Equipement, Long> {
+    List<Equipement> findByLibelleContainingIgnoreCase(String libelle);
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\repository\IMaintenanceRepository.java =====
+package tn.esprit.autoloc.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import tn.esprit.autoloc.domain.*;
+import java.util.List;
+
+public interface IMaintenanceRepository extends JpaRepository<Maintenance, Long> {
+    List<Maintenance> findByVehiculeIdVehicule(Long idVehicule);
+    List<Maintenance> findByDateFinIsNull();
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\repository\IPaiementRepository.java =====
+package tn.esprit.autoloc.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import tn.esprit.autoloc.domain.*;
+import java.math.BigDecimal;
+import java.util.List;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.data.jpa.repository.Modifying;
+import org.springframework.transaction.annotation.Transactional;
+
+public interface IPaiementRepository extends JpaRepository<Paiement, Long> {
+    List<Paiement> findByModePaiement(ModePaiement mode);
+    List<Paiement> findByMontantGreaterThan(BigDecimal montant);
+    List<Paiement> findByContratIdContrat(Long idContrat);
+    @Modifying
+    @Transactional
+    @Query("UPDATE Paiement p SET p.montant = p.montant * :factor WHERE p.modePaiement = :mode")
+    int applyDiscount(@Param("factor") BigDecimal factor, @Param("mode") ModePaiement mode);
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\repository\IReservationRepository.java =====
+package tn.esprit.autoloc.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import tn.esprit.autoloc.domain.*;
+import java.time.LocalDate;
+import java.util.List;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+public interface IReservationRepository extends JpaRepository<Reservation, Long> {
+    List<Reservation> findByStatut(StatutReservation statut);
+    List<Reservation> findByDateDebutBetween(LocalDate from, LocalDate to);
+    List<Reservation> findByClientIdClient(Long idClient);
+    long countByStatut(StatutReservation statut);
+
+    @Query("SELECT r FROM Reservation r WHERE r.client.nom = :nom")
+    List<Reservation> findReservationsByClientNom(@Param("nom") String nom);
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\java\tn\esprit\autoloc\repository\IVehiculeRepository.java =====
+package tn.esprit.autoloc.repository;
+
+import org.springframework.data.jpa.repository.JpaRepository;
+import tn.esprit.autoloc.domain.*;
+import java.math.BigDecimal;
+import java.util.List;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+
+
+public interface IVehiculeRepository extends JpaRepository<Vehicule, Long> {
+    List<Vehicule> findByMarque(String marque);
+    List<Vehicule> findByStatut(StatutVehicule statut);
+    Optional<Vehicule> findByImmatriculation(String immatriculation);
+    List<Vehicule> findByTarifJournalierLessThan(BigDecimal max);
+    List<Vehicule> findByCategorieAndStatut(CategorieVehicule categorie, StatutVehicule statut);
+    boolean existsByImmatriculation(String immatriculation);
+    
+    @Query("SELECT v FROM Vehicule v WHERE v.tarifJournalier BETWEEN :min AND :max")
+    List<Vehicule> findVehiculesInPriceRange(@Param("min") BigDecimal min, @Param("max") BigDecimal max);
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\main\resources\application.properties =====
+spring.application.name=autoloc-api
+# Connexion à la base de données
+spring.datasource.url=jdbc:mysql://localhost:3306/autoloc_db?createDatabaseIfNotExist=true
+spring.datasource.username=root
+spring.datasource.password=
+# Hibernate / JPA
+spring.jpa.hibernate.ddl-auto=update
+spring.jpa.show-sql=true
+spring.jpa.properties.hibernate.format_sql=true
+# Logs
+logging.level.org.hibernate.SQL=DEBUG
+logging.level.tn.esprit.autoloc=INFO
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\test\java\tn\esprit\autoloc\AutolocApiApplicationTests.java =====
+package tn.esprit.autoloc;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.boot.test.context.SpringBootTest;
+
+@SpringBootTest
+class AutolocApiApplicationTests {
+
+    @Test
+    void contextLoads() {
+    }
+
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\src\test\java\tn\esprit\autoloc\RepositoryTests.java =====
+package tn.esprit.autoloc;
+
+import org.junit.jupiter.api.Test;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.context.SpringBootTest;
+import tn.esprit.autoloc.domain.*;
+import tn.esprit.autoloc.repository.*;
+
+import java.math.BigDecimal;
+import java.time.LocalDate;
+import java.util.List;
+import java.util.Optional;
+
+import static org.junit.jupiter.api.Assertions.*;
+
+@SpringBootTest
+class RepositoryTests {
+
+    @Autowired private IAgenceRepository agenceRepository;
+    @Autowired private IClientRepository clientRepository;
+    @Autowired private IVehiculeRepository vehiculeRepository;
+    @Autowired private IEmployeeRepository employeeRepository;
+    @Autowired private IEquipementRepository equipementRepository;
+    @Autowired private IMaintenanceRepository maintenanceRepository;
+
+    // ============================================================
+    // PARTIE 2 â€” Agence
+    // ============================================================
+    @Test
+    void testAgenceRepository() {
+        Agence agence = new Agence();
+        agence.setNom("Agence Test");
+        agence.setVille("Tunis");
+        agence.setAdresse("12 Rue de Test");
+        agence.setTelephone("71234567");
+
+        // save()
+        Agence saved = agenceRepository.save(agence);
+        System.out.println(">>> SAVE agence -> id=" + saved.getIdAgence());
+
+        // findAll()
+        List<Agence> all = agenceRepository.findAll();
+        System.out.println(">>> FIND ALL -> " + all);
+        assertFalse(all.isEmpty());
+
+        // findById()
+        Optional<Agence> found = agenceRepository.findById(saved.getIdAgence());
+        System.out.println(">>> FIND BY ID -> " + found);
+        assertTrue(found.isPresent());
+
+        // existsById()
+        boolean exists = agenceRepository.existsById(saved.getIdAgence());
+        System.out.println(">>> EXISTS BY ID -> " + exists);
+        assertTrue(exists);
+
+        // count()
+        long count = agenceRepository.count();
+        System.out.println(">>> COUNT -> " + count);
+        assertTrue(count > 0);
+
+        // deleteById() + verify
+        agenceRepository.deleteById(saved.getIdAgence());
+        boolean stillThere = agenceRepository.existsById(saved.getIdAgence());
+        System.out.println(">>> AFTER DELETE, exists = " + stillThere);
+        assertFalse(stillThere);
+    }
+
+    // ============================================================
+    // PARTIE 3 â€” Client
+    // ============================================================
+    @Test
+    void testClientRepository() {
+        long stamp = System.currentTimeMillis();
+
+        Client c1 = new Client();
+        c1.setNom("Ben Ali");
+        c1.setPrenom("Ahmed");
+        c1.setEmail("ahmed" + stamp + "@test.tn");
+        c1.setTelephone("98111222");
+        c1.setNumPermis("P" + stamp + "A");
+        c1.setDateInscription(LocalDate.now());
+
+        Client c2 = new Client();
+        c2.setNom("Trabelsi");
+        c2.setPrenom("Sarra");
+        c2.setEmail("sarra" + stamp + "@test.tn");
+        c2.setTelephone("98333444");
+        c2.setNumPermis("P" + stamp + "B");
+        c2.setDateInscription(LocalDate.now());
+
+        Client saved1 = clientRepository.save(c1);
+        Client saved2 = clientRepository.save(c2);
+        System.out.println(">>> SAVE client 1 -> id=" + saved1.getIdClient());
+        System.out.println(">>> SAVE client 2 -> id=" + saved2.getIdClient());
+
+        // findAll()
+        List<Client> all = clientRepository.findAll();
+        System.out.println(">>> FIND ALL -> " + all);
+        assertTrue(all.size() >= 2);
+
+        // findById()
+        Optional<Client> found = clientRepository.findById(saved1.getIdClient());
+        System.out.println(">>> FIND BY ID -> " + found);
+        assertTrue(found.isPresent());
+
+        // existsById() existing
+        boolean exists = clientRepository.existsById(saved1.getIdClient());
+        System.out.println(">>> EXISTS (existing id) -> " + exists);
+        assertTrue(exists);
+
+        // existsById() non-existing
+        boolean notExists = clientRepository.existsById(999999L);
+        System.out.println(">>> EXISTS (unknown id) -> " + notExists);
+        assertFalse(notExists);
+
+        // count()
+        long count = clientRepository.count();
+        System.out.println(">>> COUNT -> " + count);
+        assertTrue(count >= 2);
+
+        // cleanup
+        clientRepository.deleteById(saved1.getIdClient());
+        clientRepository.deleteById(saved2.getIdClient());
+    }
+
+    // ============================================================
+    // PARTIE 4 â€” Vehicule
+    // ============================================================
+    @Test
+    void testVehiculeRepository() {
+        long stamp = System.currentTimeMillis();
+
+        Vehicule v = new Vehicule();
+        v.setImmatriculation("TU" + (stamp % 100000) + "TN");
+        v.setMarque("Renault");
+        v.setModele("Clio");
+        v.setCategorie(CategorieVehicule.CITADINE);
+        v.setTarifJournalier(new BigDecimal("85.00"));
+        v.setStatut(StatutVehicule.DISPONIBLE);
+
+        Vehicule saved = vehiculeRepository.save(v);
+        System.out.println(">>> SAVE vehicule -> id=" + saved.getIdVehicule());
+
+        List<Vehicule> all = vehiculeRepository.findAll();
+        System.out.println(">>> FIND ALL -> " + all);
+
+        long count = vehiculeRepository.count();
+        System.out.println(">>> COUNT -> " + count);
+        assertTrue(count > 0);
+
+        // modification via save()
+        saved.setTarifJournalier(new BigDecimal("99.00"));
+        saved.setStatut(StatutVehicule.LOUE);
+        vehiculeRepository.save(saved);
+        Vehicule updated = vehiculeRepository.findById(saved.getIdVehicule()).orElseThrow();
+        System.out.println(">>> UPDATED -> tarif=" + updated.getTarifJournalier()
+                + " statut=" + updated.getStatut());
+        assertEquals(new BigDecimal("99.00"), updated.getTarifJournalier());
+
+        // delete
+        vehiculeRepository.deleteById(saved.getIdVehicule());
+        assertFalse(vehiculeRepository.existsById(saved.getIdVehicule()));
+        System.out.println(">>> DELETE OK");
+    }
+
+    // ============================================================
+    // PARTIE 5 â€” 3 repositories en autonomie
+    // ============================================================
+
+    // --- Employee ---
+    @Test
+    void testEmployeeRepository() {
+        Employee e = new Employee();
+        e.setNom("Gharbi");
+        e.setPrenom("Mohamed");
+        e.setRole(RoleEmployee.AGENT);
+
+        Employee saved = employeeRepository.save(e);
+        System.out.println(">>> SAVE employee -> id=" + saved.getIdEmployee());
+        assertNotNull(saved.getIdEmployee());
+
+        System.out.println(">>> FIND ALL -> " + employeeRepository.findAll());
+        assertTrue(employeeRepository.existsById(saved.getIdEmployee()));
+
+        employeeRepository.deleteById(saved.getIdEmployee());
+        assertFalse(employeeRepository.existsById(saved.getIdEmployee()));
+        System.out.println(">>> EMPLOYEE TEST OK");
+    }
+    @Test
+    void testEquipementRepository() {
+        Equipement eq = new Equipement();
+        eq.setLibelle("GPS");
+
+        Equipement saved = equipementRepository.save(eq);
+        System.out.println(">>> SAVE equipement -> id=" + saved.getIdEquipement());
+        assertNotNull(saved.getIdEquipement());
+
+        Optional<Equipement> found = equipementRepository.findById(saved.getIdEquipement());
+        System.out.println(">>> FIND BY ID -> " + found);
+        assertTrue(found.isPresent());
+
+        equipementRepository.deleteById(saved.getIdEquipement());
+        assertFalse(equipementRepository.existsById(saved.getIdEquipement()));
+        System.out.println(">>> EQUIPEMENT TEST OK");
+    }
+    @Test
+    void testMaintenanceRepository() {
+        long stamp = System.currentTimeMillis();
+
+        Vehicule v = new Vehicule();
+        v.setImmatriculation("MT" + (stamp % 100000) + "TN");
+        v.setMarque("Peugeot");
+        v.setModele("208");
+        v.setCategorie(CategorieVehicule.CITADINE);
+        v.setTarifJournalier(new BigDecimal("75.00"));
+        v.setStatut(StatutVehicule.MAINTENANCE);
+        Vehicule savedVehicule = vehiculeRepository.save(v);
+
+        Maintenance m = new Maintenance();
+        m.setDateDebut(LocalDate.now());
+        m.setDescription("Vidange + filtres");
+        m.setVehicule(savedVehicule);
+
+        Maintenance saved = maintenanceRepository.save(m);
+        System.out.println(">>> SAVE maintenance -> id=" + saved.getIdMaintenance());
+        assertNotNull(saved.getIdMaintenance());
+
+        System.out.println(">>> FIND ALL -> " + maintenanceRepository.findAll());
+        assertTrue(maintenanceRepository.existsById(saved.getIdMaintenance()));
+
+        maintenanceRepository.deleteById(saved.getIdMaintenance());
+        vehiculeRepository.deleteById(savedVehicule.getIdVehicule());
+        System.out.println(">>> MAINTENANCE TEST OK");
+    }
+}
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\docs\fetch-strategy.md =====
+# StratÃ©gies de fetch et de cascade â€” ModÃ¨le AutoLoc
+
+## Principe gÃ©nÃ©ral
+Toutes les associations sont configurÃ©es en **FetchType.LAZY** afin d'Ã©viter le
+chargement en cascade de graphes d'objets volumineux. Les cascades ne sont
+appliquÃ©es que lorsqu'un enfant ne peut pas exister sans son parent
+(relation de composition).
+
+## Tableau rÃ©capitulatif
+
+| Association | Fetch | Cascade | Justification |
+|---|---|---|---|
+| Contrat â†’ Paiement | LAZY | ALL + orphanRemoval | Un paiement n'existe que rattachÃ© Ã  son contrat (composition). Supprimer le contrat supprime ses paiements ; retirer un paiement de la collection le supprime aussi. |
+| Agence â†’ Vehicule | LAZY | aucune | Un vÃ©hicule survit Ã  la suppression de son agence (il peut Ãªtre rÃ©affectÃ©). |
+| Agence â†’ Employee | LAZY | aucune | Un employÃ© peut Ãªtre mutÃ© dans une autre agence ; sa survie est indÃ©pendante. |
+| Vehicule â†” Equipment | LAZY | aucune | Les Ã©quipements sont partagÃ©s entre plusieurs vÃ©hicules : pas de notion de propriÃ©tÃ© unique. |
+| Client â†’ Reservation | LAZY | PERSIST | Enregistrer un nouveau client avec ses rÃ©servations en une seule opÃ©ration. Pas de REMOVE : supprimer un client ne doit pas effacer l'historique des rÃ©servations. |
+| Reservation â†’ Vehicule | LAZY | aucune | La rÃ©servation rÃ©fÃ©rence un vÃ©hicule existant, mais le vÃ©hicule ne dÃ©pend pas de la rÃ©servation. |
+| Reservation â†” Contrat | LAZY | ALL (cÃ´tÃ© Reservation) | Un contrat est crÃ©Ã© pour une rÃ©servation donnÃ©e ; supprimer la rÃ©servation entraÃ®ne la suppression du contrat associÃ©. |
+| Vehicule â†’ Maintenance | LAZY | PERSIST | Enregistrer un vÃ©hicule avec ses maintenances Ã  venir en une seule opÃ©ration. Pas de REMOVE : l'historique des maintenances ne doit pas disparaÃ®tre avec le vÃ©hicule. |
+
+## Pourquoi LAZY partout ?
+- Ã‰vite les requÃªtes N+1 et le chargement inutile de graphes.
+- Un accÃ¨s hors transaction Ã  une collection LAZY lÃ¨vera une
+  `LazyInitializationException` : elle sera rÃ©solue en Atelier 7 par des
+  requÃªtes dÃ©diÃ©es (fetch join ou `@EntityGraph`).
+
+## Rappels
+- `cascade = REMOVE` : supprimer le parent supprime les enfants.
+- `orphanRemoval = true` : retirer un enfant de la collection le supprime,
+  mÃªme sans supprimer le parent.
+- Les deux sont complÃ©mentaires et adaptÃ©s Ã  une composition (Contratâ€“Paiement).
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\pom.xml =====
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 https://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>4.1.1</version>
+        <relativePath/> <!-- lookup parent from repository -->
+    </parent>
+    <groupId>tn.esprit.autoloc</groupId>
+    <artifactId>autoloc-api</artifactId>
+    <version>0.0.1-SNAPSHOT</version>
+    <name>autoloc-api</name>
+    <description>autoloc-api</description>
+    <url/>
+    <licenses>
+        <license/>
+    </licenses>
+    <developers>
+        <developer/>
+    </developers>
+    <scm>
+        <connection/>
+        <developerConnection/>
+        <tag/>
+        <url/>
+    </scm>
+    <properties>
+        <java.version>17</java.version>
+    </properties>
+    <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc</artifactId>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-devtools</artifactId>
+            <scope>runtime</scope>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>com.mysql</groupId>
+            <artifactId>mysql-connector-j</artifactId>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <optional>true</optional>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-data-jpa-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-validation-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-webmvc-test</artifactId>
+            <scope>test</scope>
+        </dependency>
+    </dependencies>
+
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <executions>
+                    <execution>
+                        <id>default-compile</id>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>compile</goal>
+                        </goals>
+                        <configuration>
+                            <annotationProcessorPaths>
+                                <path>
+                                    <groupId>org.projectlombok</groupId>
+                                    <artifactId>lombok</artifactId>
+                                </path>
+                            </annotationProcessorPaths>
+                        </configuration>
+                    </execution>
+                    <execution>
+                        <id>default-testCompile</id>
+                        <phase>test-compile</phase>
+                        <goals>
+                            <goal>testCompile</goal>
+                        </goals>
+                        <configuration>
+                            <annotationProcessorPaths>
+                                <path>
+                                    <groupId>org.projectlombok</groupId>
+                                    <artifactId>lombok</artifactId>
+                                </path>
+                            </annotationProcessorPaths>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+        </plugins>
+    </build>
+
+</project>
+===== C:\Users\malek\Desktop\4DAS\Architecture des SI\autoloc-api\lombok.config =====
+config.stopBubbling = true
+lombok.fieldDefaults.defaultPrivate = true
