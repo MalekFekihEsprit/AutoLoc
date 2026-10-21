@@ -1,0 +1,30 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/vehicules"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"immatriculation\": \"TU1234TN\",\r
+
+    \  \"marque\": \"Renault\",\r
+
+    \  \"modele\": \"Clio\",\r
+
+    \  \"categorie\": \"CITADINE\",\r
+
+    \  \"tarifJournalier\": 85.00,\r
+
+    \  \"statut\": \"DISPONIBLE\",\r
+
+    \  \"agence\": { \"idAgence\": 4 },\r
+
+    \  \"equipements\": [\r
+
+    \    { \"idEquipement\": 4 }\r
+
+    \  ]\r
+
+    }"
+order: 1000

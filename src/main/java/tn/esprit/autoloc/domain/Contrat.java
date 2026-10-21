@@ -6,12 +6,15 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Entity
 @Table(name = "contrat")
 @Getter @Setter @NoArgsConstructor @AllArgsConstructor
 @ToString(exclude = {"idContrat", "reservation", "paiements"})
 @EqualsAndHashCode(exclude = {"idContrat", "reservation", "paiements"})
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Contrat {
     @OneToMany(
             mappedBy = "contrat",
@@ -19,6 +22,7 @@ public class Contrat {
             orphanRemoval = true,
             fetch = FetchType.LAZY
     )
+    @JsonManagedReference("contrat-paiements")
     List<Paiement> paiements = new ArrayList<>();
 
     @OneToOne(fetch = FetchType.LAZY)

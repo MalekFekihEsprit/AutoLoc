@@ -1,0 +1,5 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/contrats/{{contratId}}"
+method: DELETE
+order: 1792162778266

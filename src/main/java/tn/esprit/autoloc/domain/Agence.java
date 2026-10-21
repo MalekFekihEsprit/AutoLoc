@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.ArrayList;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "agence")
@@ -15,9 +16,11 @@ import java.util.List;
 @EqualsAndHashCode(exclude = {"idAgence", "vehicules", "employees"})
 public class Agence {
     @OneToMany(mappedBy = "agence", fetch = FetchType.LAZY)
+    @JsonIgnore
     List<Vehicule> vehicules = new ArrayList<>();
 
     @OneToMany(mappedBy = "agence", fetch = FetchType.LAZY)
+    @JsonIgnore
     List<Employee> employees = new ArrayList<>();
 
     @Id

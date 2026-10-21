@@ -1,0 +1,12 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/equipements"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"libelle\": \"GPS Garmin\"\r
+
+    }"
+order: 1000

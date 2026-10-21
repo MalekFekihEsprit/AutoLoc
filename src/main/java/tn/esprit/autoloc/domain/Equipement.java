@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.util.HashSet;
 import java.util.Set;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "equipement")
@@ -12,6 +13,7 @@ import java.util.Set;
 @EqualsAndHashCode(exclude = {"idEquipement", "vehicules"})
 public class Equipement {
     @ManyToMany(mappedBy = "equipements", fetch = FetchType.LAZY)
+    @JsonIgnore
     Set<Vehicule> vehicules = new HashSet<>();
 
     @Id

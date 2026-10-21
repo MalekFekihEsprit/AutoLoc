@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "paiement")
@@ -12,6 +13,7 @@ import java.time.LocalDate;
 @EqualsAndHashCode(exclude = {"idPaiement", "contrat"})
 public class Paiement {
     @ManyToOne(fetch = FetchType.LAZY)
+    @JsonBackReference("contrat-paiements")
     Contrat contrat;
 
     @Id

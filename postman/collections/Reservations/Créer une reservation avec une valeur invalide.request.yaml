@@ -1,0 +1,20 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/reservations"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"dateDebut\": \"2026-11-10\",\r
+
+    \  \"dateFin\": \"2026-11-15\",\r
+
+    \  \"statut\": \"EN_ATTENTE\",\r
+
+    \  \"client\":  { \"idClient\":  7 },\r
+
+    \  \"vehicule\":{ \"idVehicule\": 11 }\r
+
+    }"
+order: 1000

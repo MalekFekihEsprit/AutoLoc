@@ -5,6 +5,7 @@ import lombok.*;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 @Entity
 @Table(name = "client")
@@ -13,6 +14,7 @@ import java.util.List;
 @EqualsAndHashCode(exclude = {"idClient", "reservations"})
 public class Client {
     @OneToMany(mappedBy = "client", cascade = CascadeType.PERSIST, fetch = FetchType.LAZY)
+    @JsonIgnore
     List<Reservation> reservations = new ArrayList<>();
 
     @Id

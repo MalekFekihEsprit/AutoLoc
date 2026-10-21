@@ -1,0 +1,5 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/contrats"
+method: GET
+order: 1792162774266

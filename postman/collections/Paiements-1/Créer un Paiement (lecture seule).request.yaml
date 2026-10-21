@@ -1,0 +1,16 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/paiements"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \      \"montant\": 150.00,\r
+
+    \      \"datePaiement\": \"2026-11-10\",\r
+
+    \      \"modePaiement\": \"CARTE\"\r
+
+    \    }"
+order: 2000

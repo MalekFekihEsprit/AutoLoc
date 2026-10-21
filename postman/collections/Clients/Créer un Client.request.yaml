@@ -1,0 +1,22 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/clients"
+method: POST
+body:
+  type: json
+  content: "{\r
+
+    \  \"nom\": \"Fekih\",\r
+
+    \  \"prenom\": \"Malek\",\r
+
+    \  \"email\": \"malek.fekih@test.tn\",\r
+
+    \  \"telephone\": \"98111222\",\r
+
+    \  \"numPermis\": \"P123456A\",\r
+
+    \  \"dateInscription\": \"2026-01-15\"\r
+
+    }"
+order: 1000
