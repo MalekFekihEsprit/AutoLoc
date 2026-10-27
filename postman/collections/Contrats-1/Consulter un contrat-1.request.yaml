@@ -1,5 +1,6 @@
 $kind: http-request
+name: Consulter un contrat
 description: ""
 url: "{{baseUrl}}/api/contrats/{{contratId}}"
 method: GET
-order: 1792162775266
+order: 2000

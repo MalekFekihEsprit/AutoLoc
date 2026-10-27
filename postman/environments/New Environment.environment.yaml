@@ -2,5 +2,3 @@ name: New Environment
 values:
   - key: baseUrl
     value: ''
-  - key: contratId
-    value: ''

@@ -19,4 +19,4 @@ scripts:
 
       pm.environment.set(\"contratId\", pm.response.json().idContrat);"
     language: text/javascript
-order: 1792162776266
+order: 3000

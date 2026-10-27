@@ -1,0 +1,5 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/clients/{{clientId}}"
+method: DELETE
+order: 1934

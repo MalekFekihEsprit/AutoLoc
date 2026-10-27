@@ -5,12 +5,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.autoloc.domain.Client;
 import tn.esprit.autoloc.service.IClientService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/clients")
 @RequiredArgsConstructor
+@Tag(name = "Clients", description = "Gestion des clients")
 public class ClientController {
 
     private final IClientService clientService;

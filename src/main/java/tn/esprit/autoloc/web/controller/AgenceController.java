@@ -1,5 +1,6 @@
 package tn.esprit.autoloc.web.controller;
 
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
@@ -11,6 +12,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/agences")
 @RequiredArgsConstructor
+@Tag(name = "Agences", description = "Gestion des agences")
 public class AgenceController {
 
     private final IAgenceService agenceService;

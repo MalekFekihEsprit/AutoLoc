@@ -1,0 +1,5 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/agences/{{agenceId}}"
+method: GET
+order: 4000

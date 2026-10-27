@@ -5,12 +5,14 @@ import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.*;
 import tn.esprit.autoloc.domain.Vehicule;
 import tn.esprit.autoloc.service.IVehiculeService;
+import io.swagger.v3.oas.annotations.tags.Tag;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/vehicules")
 @RequiredArgsConstructor
+@Tag(name = "Véhicules", description = "Gestion du parc automobile")
 public class VehiculeController {
 
     private final IVehiculeService vehiculeService;

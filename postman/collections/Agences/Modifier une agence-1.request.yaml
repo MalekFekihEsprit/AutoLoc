@@ -1,0 +1,19 @@
+$kind: http-request
+name: Modifier une agence
+description: ""
+url: "{{baseUrl}}/api/agences/{{agenceId}}"
+method: PUT
+body:
+  type: json
+  content: "{\r
+
+    \  \"nom\": \"Agence Tunis Centre\",\r
+
+    \  \"ville\": \"Tunis\",\r
+
+    \  \"adresse\": \"12 Avenue Habib Bourguiba\",\r
+
+    \  \"telephone\": \"99999999\"\r
+
+    }"
+order: 6240

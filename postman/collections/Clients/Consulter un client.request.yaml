@@ -1,0 +1,5 @@
+$kind: http-request
+description: ""
+url: "{{baseUrl}}/api/clients/{{clientId}}"
+method: GET
+order: 655
